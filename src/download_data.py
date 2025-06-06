@@ -1,6 +1,6 @@
 import os
 import requests
-import pandas as pd
+from datetime import datetime
 
 # ----------------------------
 # CONSTANTS
@@ -8,6 +8,7 @@ import pandas as pd
 BASE_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
 PACKAGE_ID = "dinesafe"
 DATA_DIR = "data"
+RAW_DIR = "data/raw"
 CSV_FILENAME = "dinesafe_raw.csv"
 
 # ----------------------------
@@ -40,9 +41,12 @@ def handle_resources(resources):
 
         if resource["datastore_active"]:
             print("!! YES This is a CKAN datastore-active resource")
+            print("Download URL: " + BASE_URL + "/datastore/dump/" + resource["id"])
+            handle_datastore_resource(resource)
+            # break # if you only want to download the first one
         else:
             print("This is a direct file resource")
-        print("Download URL: " + resource["url"])
+            print("Download URL: " + resource["url"])
 
 # ----------------------------
 # Handle a datastore-active resource
@@ -50,15 +54,18 @@ def handle_resources(resources):
 def handle_datastore_resource(resource):
     # Attempt to get all records in CSV format
     resource_dump_url = BASE_URL + "/datastore/dump/" + resource["id"]
+    print("Downloading CSV from CKAN. This may take a few seconds.")
     resource_dump_response = requests.get(resource_dump_url)
 
-    if resource_dump_response == 200:
+    if resource_dump_response.status_code == 200:
         print("Successfully downloaded the full CSV dump.")
         preview = resource_dump_response.text[:500]
         print("Truncated preview:" + preview)
 
-        save_path = os.path.join(DATA_DIR, CSV_FILENAME)
-        os.makedirs(DATA_DIR, exist_ok=True)
+        os.makedirs(RAW_DIR, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"dinesafe_{timestamp}.csv"
+        save_path = os.path.join(RAW_DIR, filename)
 
         with open(save_path, "w", encoding="utf-8") as f:
             f.write(resource_dump_response.text)
