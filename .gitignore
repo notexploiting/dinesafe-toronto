@@ -1,5 +1,6 @@
 # Ignore raw/processed data
-data/*.csv
+data/raw/*.csv
+data/processed/*.csv
 
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints/
