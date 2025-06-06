@@ -1,6 +1,31 @@
 import os
 import requests
 from datetime import datetime
+"""
+download_data.py
+
+Fetches the most up-to-date DineSafe dataset from the City of Toronto's Open Data CKAN API.
+
+Usage:
+    Run this script from the root of the repository:
+        $ python src/download_data.py
+
+    The script will:
+    - Retrieve metadata for the "dinesafe" dataset
+    - Identify the latest datastore-active resource
+    - Download the full CSV dump from CKAN
+    - Save the raw file to the 'data/raw/' directory with a timestamped filename
+
+Output:
+    - data/raw/dinesafe_YYYYMMDD_HHMMSS.csv
+
+Notes:
+    - Requires an internet connection
+    - Will create the 'data/raw' directory if it doesn't exist
+    - Use this script before running 01_eda.ipynb to ensure data is available
+
+"""
+
 
 # ----------------------------
 # CONSTANTS
