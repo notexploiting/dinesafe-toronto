@@ -1,0 +1,10 @@
+# Ignore raw/processed data
+data/*.csv
+
+# Jupyter notebook checkpoints
+**/.ipynb_checkpoints/
+
+# System files
+.DS_Store
+
+venv/
