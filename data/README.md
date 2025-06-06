@@ -1,0 +1,1 @@
+This readme is for explaining where data files come from and naming conventions. The parent folder is for raw and cleaned data
