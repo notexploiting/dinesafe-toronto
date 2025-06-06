@@ -1,0 +1,1 @@
+# Script to fetch the latest data from CKAN
