@@ -30,6 +30,22 @@ git clone https://github.com/notexploiting/dinesafe-toronto.git
 cd dinesafe-toronto
 ```
 
+### Set up a virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Download the dataset
+```bash
+python src/download_data.py
+```
+
 ## Project Goals
 
 ### Data Cleaning
