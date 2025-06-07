@@ -62,7 +62,7 @@ def handle_resources(resources):
         print("\t" + "Name: " + resource["name"])
         print("\t" + "ID: " + resource["id"])
         print("\t" + "Format: " + resource.get("format", "unknown"))
-        print(f"\tDatastore Active: {resource["datastore_active"]}")
+        print(f"\tDatastore Active: {resource['datastore_active']}")
 
         if resource["datastore_active"]:
             print("!! YES This is a CKAN datastore-active resource")
