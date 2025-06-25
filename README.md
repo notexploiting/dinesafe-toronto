@@ -1,26 +1,14 @@
 # DineSafe Toronto
 Explore restaurant inspection data from the City of Toronto.
 
-## Project Summary
+![City of Toronto Logo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyy76VN3b0xT5ReM-Av4gu3flYxW3sArThhA&s)
 
-DineSafe Toronto is a data analysis project focused on food safety inspections in Toronto. We explore trends in infractions, identify high-risk establishments, and visualize inspection results across time, neighborhoods, and restaurant types.
+DineSafe Toronto is a data science projected focused on analyzing food safety inspections conducted by Toronto Public Health. We explore temporal trends, establishment characteristics, neighborhood distributions, as well as patterns in infractions, severity levels, location, and operations. 
 
-## Data Source
+## Example Visual
+<p align="center"> <img src="notebooks/assets/inspections_by_month.png" width="600"/> </p>
 
-The dataset is published by the City of Toronto's Open Data portal under the [DineSafe program](https://www.toronto.ca/community-people/health-wellness-care/health-inspections/dinesafe/).
-* Free to use (Open Government License – Toronto)
-* Accessible on the [Open Data Catalogue](https://open.toronto.ca/dataset/dinesafe/)
-* "Gold" grade (>=80%)
-  * Freshness (100%): up-to-date
-  * Metadata (100%): well-described
-  * Accessibility (75%): this dataset hasn't been associated with any additional, searchable keywords
-  * Completeness (100%): no missing data
-  * Usability (100%): easy to work with data
 
-## Motivation
-Toronto’s DineSafe program monitors food safety and public health by inspecting all restaurants and food establishments. This project explores:
-* Which businesses are more prone to serious health violations?
-* How has food safety changed over time in the city?
 
 ## Getting Started
 
@@ -46,27 +34,36 @@ pip install -r requirements.txt
 python src/download_data.py
 ```
 
+### Run the EDA notebook
+Open `notebooks/01_eda.ipynb` in Jupyter or VSCode
+
 ## Project Goals
 
 ### Data Cleaning
-* Convert inspection dates to datetime
-* Handle nulls and inconsistent types
+- Convert inspection dates to datetime
+- Handle nulls and inconsistent types
+- Drop irrelevant or unusable columns
 
 ### Exploratory Data Analysis (EDA)
-* Most common infractions
-* Serious vs. minor violations by restaurant type
-* Monthly trends in inspection outcomes
-* Chain restaurants vs. independents
+- What are the most common infractions?
+- Which establishment types have the most serious violations?
+- How do inspection trends vary over time and geography?
 
 ### Feature Engineering
-* Risk classification: High/Medium/Low
-* Inspection count and infraction rate per restaurant
+- Risk classification: High/Medium/Low risk establishments
+- Inspection count and infraction rate per restaurant
+- Repeat offender tagging
 
 ### Visualizations
-* Top 10 infractions bar plot
-* Infractions over time line chart
-* Heatmap of neighborhoods with high violation density
+- Top 10 infractions by severity
+- Infractions over time 
+- Heatmap of neighborhoods with high violation density
 
-## License
+## Data Source
 
-[Open Government License - Toronto](https://open.toronto.ca/open-data-licence/)
+- Dataset: [City of Toronto DineSafe Open Data](https://open.toronto.ca/dataset/dinesafe/)
+- License: [Open Government License - Toronto](https://open.toronto.ca/open-data-licence/)
+- Updated: Automatically using the CKAN API
+
+## Notebooks Rendered on GitHub
+You can view `01_eda.ipynb` directly in your browser [here](https://github.com/notexploiting/dinesafe-toronto/blob/main/notebooks/01_eda.ipynb), no need to download or run anything. Currently doesn't work on mobile devices.
