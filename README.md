@@ -3,7 +3,13 @@ Explore restaurant inspection data from the City of Toronto.
 
 ![City of Toronto Logo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyy76VN3b0xT5ReM-Av4gu3flYxW3sArThhA&s)
 
-DineSafe Toronto is a data science projected focused on analyzing food safety inspections conducted by Toronto Public Health. We explore temporal trends, establishment characteristics, neighborhood distributions, as well as patterns in infractions, severity levels, location, and operations. 
+DineSafe Toronto is a data science projected focused on analyzing food safety inspections conducted by Toronto Public Health. We explore temporal trends, establishment characteristics, neighborhood distributions, as well as patterns in infractions, severity levels, location, and operations.
+
+| DineSafe Pass Notice | DineSafe Conditional Notice | DineSafe Closed Notice |
+|----------------------|-----------------------------|------------------------|
+| ![Pass](https://www.toronto.ca/wp-content/uploads/2019/10/981a-pass_lrg.png) | ![Conditional](https://www.toronto.ca/wp-content/uploads/2019/10/906e-conditional_lrg.png) | ![Closed](https://www.toronto.ca/wp-content/uploads/2019/10/9098-closed_lrg.png) |
+
+
 
 ## Example Visual
 <p align="center"> <img src="notebooks/assets/inspections_by_month.png" width="600"/> </p>
