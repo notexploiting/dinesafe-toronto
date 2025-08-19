@@ -52,32 +52,54 @@ requirements.txt           # Python dependencies
 
 
 
-## Getting Started
+## How to Run
 
-### Clone the repository
+### 1. Clone the repository
 ```bash
 git clone https://github.com/notexploiting/dinesafe-toronto.git
 cd dinesafe-toronto
 ```
 
-### Set up a virtual environment
+### 2. Create and Activate a Virtual Environment
+**Windows**:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
+```
+**macOS/Linux**:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-### Install dependencies
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Download the dataset
+### 4. Download the dataset
 ```bash
 python src/download_data.py
 ```
 
-### Run the EDA notebook
-Open `notebooks/01_eda.ipynb` in Jupyter or VSCode
+### 5. Run the EDA notebook
+Open & Run All Chunks `notebooks/01_eda.ipynb` in Jupyter or VSCode
+
+### 6. Run the Feature Engineering notebook
+Open & Run All Chunks `notebooks/02_feature_engineering.ipynb` in Jupyter or VSCode
+
+### Every Time You Work on the Project
+1. Open VSCode in the project folder
+2. Activate the virtual environment
+**Windows**:
+```bash
+.venv\Scripts\activate
+```
+**macOS/Linux**:
+```bash
+source .venv/bin/activate
+```
+3. Open and run Jupyter notebooks inside VSCode
 
 ## Project Goals
 
