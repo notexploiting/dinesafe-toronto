@@ -101,28 +101,6 @@ source .venv/bin/activate
 ```
 3. Open and run Jupyter notebooks inside VSCode
 
-## Project Goals
-
-### Data Cleaning
-- Convert inspection dates to datetime
-- Handle nulls and inconsistent types
-- Drop irrelevant or unusable columns
-
-### Exploratory Data Analysis (EDA)
-- What are the most common infractions?
-- Which establishment types have the most serious violations?
-- How do inspection trends vary over time and geography?
-
-### Feature Engineering
-- Risk classification: High/Medium/Low risk establishments
-- Inspection count and infraction rate per restaurant
-- Repeat offender tagging
-
-### Visualizations
-- Top 10 infractions by severity
-- Infractions over time 
-- Heatmap of neighborhoods with high violation density
-
 ## Data Source
 
 - Dataset: [City of Toronto DineSafe Open Data](https://open.toronto.ca/dataset/dinesafe/)
