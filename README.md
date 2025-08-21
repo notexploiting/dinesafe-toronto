@@ -34,6 +34,7 @@ These notices aren't just stickers. They're data points. This project dives into
 data/
   raw/         # Original DineSafe CSVs
   processed/   # Cleaned and feature-engineered CSVs
+  excel/       # Excel-specific CSVs
 notebooks/
   01_eda.ipynb             # Exploratory Data Analysis
   02_feature_engineering.ipynb # Feature engineering steps
@@ -42,6 +43,9 @@ src/
   download_data.py         # Script to fetch latest data
 notes/
   01_ckan_api_explained.md # API documentation and notes
+reports/
+  DineSafe_Dashboard.xlsx           # demo workbook (small sample)
+  excel_dashboard_screenshots/      # screenshots of key visuals
 README.md                  # Project documentation
 requirements.txt           # Python dependencies
 ```
