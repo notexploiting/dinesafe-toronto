@@ -29,6 +29,39 @@ These notices aren't just stickers. They're data points. This project dives into
    - Save processed data to CSV for easy import into Excel and Power BI
    - Visualize trends and risk scores in Power BI dashboards
 
+## Excel \& Power BI Dashboards
+In addition to Python-based data cleaning and feature engineering, this project delivers stakeholder-ready reporting using Excel and Power BI.
+
+### Excel Dashboard
+- KPIs: Total inspections, Serious infraction rate
+- Monthly trend of inspections and violations
+- Establishment segmentation by type and severity
+- Enforcement outcomes (fines and actions)
+
+<p align="center">
+  <img src="reports/excel_dashboard_screenshots/severity_of_inspection_findings_by_establishment_type.png" width="600"/>
+</p>
+
+<p align="center">
+  <img src="reports/excel_dashboard_screenshots/distribution_of_action_taken_for_restaurants.png" width="600"/>
+</p>
+
+<p align="center">
+  <img src="reports/excel_dashboard_screenshots/monthly_inspection_volume.png" width="600"/>
+</p>
+
+Download a demo workbook:  
+[**DineSafe_Dashboard.xlsx**](reports/DineSafe_Dashboard.xlsx)
+
+
+> Note: This workbook contains a reduced sample (~500–1000 rows) for GitHub demo purposes.  
+> The full dataset (130k+ rows) is publicly available from the [City of Toronto Open Data Portal](https://open.toronto.ca/dataset/dinesafe/). Alternatively, `download_data.py` automatically grabs the latest dataset from the same portal.
+
+### Power BI Dashboard
+- Interactive map of infractions by severity
+- Filters for year, establishment type, and severity
+- Tree map of inspections by establishment type
+
 ## Repository Structure
 ```
 data/
@@ -47,7 +80,7 @@ requirements.txt           # Python dependencies
 ```
 
 
-## Example Visual
+## Example Visual from Python
 <p align="center"> <img src="notebooks/assets/inspections_by_month.png" width="600"/> </p>
 
 
