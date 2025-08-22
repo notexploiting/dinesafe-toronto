@@ -6,7 +6,7 @@ DineSafe Toronto is a data science projected focused on analyzing food safety in
 
 You've may seen these posters displayed near the entrance of restaurants across Toronto. Issued by Toronto Public Health, they signal results of recent food safety inspections:
 
-| DineSafe Pass Notice | DineSafe Conditional Notice | DineSafe Closed Notice |
+| Pass Notice | Conditional Notice | Closed Notice |
 |----------------------|-----------------------------|------------------------|
 | ![Pass](https://www.toronto.ca/wp-content/uploads/2019/10/981a-pass_lrg.png) | ![Conditional](https://www.toronto.ca/wp-content/uploads/2019/10/906e-conditional_lrg.png) | ![Closed](https://www.toronto.ca/wp-content/uploads/2019/10/9098-closed_lrg.png) |
 
