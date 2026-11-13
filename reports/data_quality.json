@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-11-13T12:58:54+00:00",
+  "snapshot": "dinesafe_20261113_125541.csv",
+  "historical_files": 23,
+  "historical_quote_repairs": {
+    "dinesafe_hist_2020.csv": 2,
+    "dinesafe_hist_2021.csv": 2,
+    "dinesafe_hist_2022.csv": 2
+  },
+  "current_rows_in": 126918,
+  "current_rows_dropped_bad_date_or_id": 0,
+  "current_rows_bad_coordinates": 0,
+  "current_establishments_with_legacy_and_new_ids": 1357,
+  "current_duplicate_inspections_removed": 3286,
+  "current_duplicate_rows_removed": 4773,
+  "current_exact_duplicate_rows_removed": 493,
+  "current_establishments": 18798,
+  "current_establishments_without_coordinates": 0,
+  "current_establishments_without_postal_code": 423,
+  "current_first_date": "2023-11-10",
+  "current_last_date": "2026-11-12",
+  "archive_rows_in": 395626,
+  "archive_rows_dropped_bad_date_or_id": 0,
+  "archive_rows_dropped_overlap_with_current": 4791,
+  "archive_exact_duplicate_rows_removed": 691,
+  "archive_rows_kept": 390144,
+  "archive_rows_linked_to_current_establishments": 298534,
+  "current_establishments_linked_to_archive": 12099,
+  "inspections_total": 276475,
+  "inspections_current": 81975,
+  "infractions_total": 261880,
+  "infractions_without_severity": 0,
+  "source_last_refreshed": "2026-11-13 08:16:44.411635",
+  "categories": {
+    "archive_training_rows": 18401,
+    "cross_validation": {
+      "n_training_names": 18401,
+      "accuracy_all": 0.8453,
+      "coverage_at_threshold": 0.8833,
+      "accuracy_at_threshold": 0.8877,
+      "min_confidence": 0.6
+    },
+    "category_source_counts": {
+      "archive": 12099,
+      "inferred": 6012,
+      "unknown": 687
+    },
+    "category_counts": {
+      "Restaurant & take-out": 12449,
+      "Institutional": 2309,
+      "Grocery & retail": 2100,
+      "Unknown": 687,
+      "Bakery": 469,
+      "Catering & banquet": 439,
+      "Bar & club": 210,
+      "Food processing": 135
+    }
+  }
+}

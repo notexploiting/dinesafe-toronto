@@ -1,0 +1,538 @@
+{
+  "generated_at": "2026-11-13T12:58:54+00:00",
+  "features": [
+    "log_n_inspections",
+    "history_years",
+    "rate_any",
+    "rate_serious",
+    "rate_not_pass",
+    "ewm_any",
+    "ewm_serious",
+    "ewm_not_pass",
+    "last_n_infractions",
+    "last_serious",
+    "last_crucial",
+    "last_not_pass",
+    "last_was_followup",
+    "recent_crucial",
+    "recent_significant",
+    "recent_pest",
+    "recent_hygiene",
+    "recent_temperature",
+    "recent_protection",
+    "recent_food_contact",
+    "routine_per_year",
+    "ever_closed",
+    "ever_convicted",
+    "has_archive_history",
+    "min_inspections",
+    "min_inspections_unknown",
+    "log_chain_size",
+    "cat_Restaurant & take-out",
+    "cat_Bar & club",
+    "cat_Bakery",
+    "cat_Grocery & retail",
+    "cat_Catering & banquet",
+    "cat_Institutional",
+    "cat_Food processing",
+    "cat_Unknown"
+  ],
+  "n_pairs": 73934,
+  "validation": {
+    "cutoff": "2025-11-12",
+    "train_period": [
+      "2023-11-10",
+      "2025-11-11"
+    ],
+    "valid_period": [
+      "2025-11-12",
+      "2026-11-12"
+    ],
+    "n_train": 44214,
+    "n_valid": 29720
+  },
+  "y_any": {
+    "label": "Any infraction",
+    "models": {
+      "city_average": {
+        "n": 29720,
+        "observed_rate": 0.4955,
+        "mean_prediction": 0.4956,
+        "brier": 0.24998,
+        "log_loss": 0.69311,
+        "roc_auc": 0.5,
+        "average_precision": 0.4955,
+        "ece": 0.0288
+      },
+      "last_inspection": {
+        "n": 29720,
+        "observed_rate": 0.4955,
+        "mean_prediction": 0.5011,
+        "brier": 0.21948,
+        "log_loss": 0.63082,
+        "roc_auc": 0.6749,
+        "average_precision": 0.6137,
+        "ece": 0.0211
+      },
+      "history_rate": {
+        "n": 29720,
+        "observed_rate": 0.4955,
+        "mean_prediction": 0.4643,
+        "brier": 0.20692,
+        "log_loss": 0.60097,
+        "roc_auc": 0.7427,
+        "average_precision": 0.7134,
+        "ece": 0.0312
+      },
+      "logistic": {
+        "n": 29720,
+        "observed_rate": 0.4955,
+        "mean_prediction": 0.5049,
+        "brier": 0.19732,
+        "log_loss": 0.57924,
+        "roc_auc": 0.7658,
+        "average_precision": 0.7475,
+        "ece": 0.0172
+      },
+      "gbm": {
+        "n": 29720,
+        "observed_rate": 0.4955,
+        "mean_prediction": 0.4807,
+        "brier": 0.19877,
+        "log_loss": 0.58309,
+        "roc_auc": 0.7634,
+        "average_precision": 0.7414,
+        "ece": 0.0272
+      }
+    },
+    "calibration": [
+      {
+        "bin": 0,
+        "n": 2972,
+        "mean_predicted": 0.1384,
+        "observed": 0.1269
+      },
+      {
+        "bin": 1,
+        "n": 2972,
+        "mean_predicted": 0.2346,
+        "observed": 0.2116
+      },
+      {
+        "bin": 2,
+        "n": 2972,
+        "mean_predicted": 0.3018,
+        "observed": 0.2958
+      },
+      {
+        "bin": 3,
+        "n": 2972,
+        "mean_predicted": 0.3571,
+        "observed": 0.3933
+      },
+      {
+        "bin": 4,
+        "n": 2972,
+        "mean_predicted": 0.4476,
+        "observed": 0.4505
+      },
+      {
+        "bin": 5,
+        "n": 2972,
+        "mean_predicted": 0.5499,
+        "observed": 0.5397
+      },
+      {
+        "bin": 6,
+        "n": 2972,
+        "mean_predicted": 0.6433,
+        "observed": 0.6269
+      },
+      {
+        "bin": 7,
+        "n": 2972,
+        "mean_predicted": 0.7193,
+        "observed": 0.6894
+      },
+      {
+        "bin": 8,
+        "n": 2972,
+        "mean_predicted": 0.7897,
+        "observed": 0.7699
+      },
+      {
+        "bin": 9,
+        "n": 2972,
+        "mean_predicted": 0.8675,
+        "observed": 0.8513
+      }
+    ],
+    "chosen_model": "logistic",
+    "base_rate_recent": 0.4959,
+    "logistic_coefficients": {
+      "rate_any": 0.3413,
+      "last_n_infractions": 0.3343,
+      "ewm_any": 0.2742,
+      "cat_Institutional": -0.2116,
+      "min_inspections": 0.1707,
+      "cat_Restaurant & take-out": 0.1425,
+      "recent_significant": 0.1115,
+      "log_chain_size": -0.1098,
+      "ewm_not_pass": -0.1,
+      "last_serious": -0.0905,
+      "recent_protection": 0.0837,
+      "last_not_pass": -0.0712,
+      "rate_not_pass": 0.0712,
+      "rate_serious": 0.0556,
+      "has_archive_history": -0.0528,
+      "cat_Bakery": 0.0457,
+      "cat_Catering & banquet": -0.0454,
+      "cat_Grocery & retail": 0.0441,
+      "ewm_serious": -0.0416,
+      "routine_per_year": -0.0376,
+      "ever_closed": -0.0345,
+      "ever_convicted": 0.0268,
+      "recent_temperature": 0.0267,
+      "min_inspections_unknown": -0.0263,
+      "last_was_followup": 0.0205,
+      "history_years": -0.0192,
+      "recent_pest": 0.0127,
+      "recent_crucial": -0.0112,
+      "recent_food_contact": -0.0101,
+      "cat_Bar & club": 0.0066,
+      "last_crucial": 0.0043,
+      "recent_hygiene": 0.0033,
+      "log_n_inspections": 0.0028,
+      "cat_Food processing": 0.0024,
+      "cat_Unknown": -0.0018
+    }
+  },
+  "y_serious": {
+    "label": "Significant or crucial infraction",
+    "models": {
+      "city_average": {
+        "n": 29720,
+        "observed_rate": 0.2155,
+        "mean_prediction": 0.2199,
+        "brier": 0.16907,
+        "log_loss": 0.52118,
+        "roc_auc": 0.5,
+        "average_precision": 0.2155,
+        "ece": 0.0201
+      },
+      "last_inspection": {
+        "n": 29720,
+        "observed_rate": 0.2155,
+        "mean_prediction": 0.2223,
+        "brier": 0.16383,
+        "log_loss": 0.50663,
+        "roc_auc": 0.5942,
+        "average_precision": 0.2659,
+        "ece": 0.0199
+      },
+      "history_rate": {
+        "n": 29720,
+        "observed_rate": 0.2155,
+        "mean_prediction": 0.2265,
+        "brier": 0.1591,
+        "log_loss": 0.49151,
+        "roc_auc": 0.6764,
+        "average_precision": 0.354,
+        "ece": 0.0288
+      },
+      "logistic": {
+        "n": 29720,
+        "observed_rate": 0.2155,
+        "mean_prediction": 0.2204,
+        "brier": 0.1543,
+        "log_loss": 0.47671,
+        "roc_auc": 0.7048,
+        "average_precision": 0.3797,
+        "ece": 0.012
+      },
+      "gbm": {
+        "n": 29720,
+        "observed_rate": 0.2155,
+        "mean_prediction": 0.2025,
+        "brier": 0.15632,
+        "log_loss": 0.48201,
+        "roc_auc": 0.6978,
+        "average_precision": 0.3635,
+        "ece": 0.0247
+      }
+    },
+    "calibration": [
+      {
+        "bin": 0,
+        "n": 2972,
+        "mean_predicted": 0.0582,
+        "observed": 0.0532
+      },
+      {
+        "bin": 1,
+        "n": 2972,
+        "mean_predicted": 0.0927,
+        "observed": 0.0801
+      },
+      {
+        "bin": 2,
+        "n": 2972,
+        "mean_predicted": 0.121,
+        "observed": 0.1137
+      },
+      {
+        "bin": 3,
+        "n": 2972,
+        "mean_predicted": 0.1476,
+        "observed": 0.143
+      },
+      {
+        "bin": 4,
+        "n": 2972,
+        "mean_predicted": 0.1744,
+        "observed": 0.1773
+      },
+      {
+        "bin": 5,
+        "n": 2972,
+        "mean_predicted": 0.2033,
+        "observed": 0.2073
+      },
+      {
+        "bin": 6,
+        "n": 2972,
+        "mean_predicted": 0.2493,
+        "observed": 0.2746
+      },
+      {
+        "bin": 7,
+        "n": 2972,
+        "mean_predicted": 0.3034,
+        "observed": 0.3065
+      },
+      {
+        "bin": 8,
+        "n": 2972,
+        "mean_predicted": 0.3726,
+        "observed": 0.3499
+      },
+      {
+        "bin": 9,
+        "n": 2972,
+        "mean_predicted": 0.4812,
+        "observed": 0.4492
+      }
+    ],
+    "chosen_model": "logistic",
+    "base_rate_recent": 0.2169,
+    "logistic_coefficients": {
+      "last_n_infractions": 0.1823,
+      "min_inspections": 0.1744,
+      "log_n_inspections": -0.1665,
+      "cat_Institutional": -0.1588,
+      "ewm_any": 0.146,
+      "rate_serious": 0.1344,
+      "log_chain_size": -0.1301,
+      "cat_Restaurant & take-out": 0.1124,
+      "recent_protection": 0.1111,
+      "rate_any": 0.1007,
+      "last_serious": -0.0793,
+      "ewm_serious": 0.0664,
+      "has_archive_history": -0.0656,
+      "ewm_not_pass": -0.0651,
+      "last_not_pass": -0.0625,
+      "recent_significant": 0.0587,
+      "min_inspections_unknown": -0.058,
+      "routine_per_year": -0.0559,
+      "recent_hygiene": 0.0555,
+      "recent_crucial": -0.0544,
+      "rate_not_pass": 0.0415,
+      "cat_Grocery & retail": 0.0391,
+      "cat_Catering & banquet": -0.0374,
+      "recent_food_contact": 0.0326,
+      "history_years": 0.0312,
+      "last_crucial": 0.0269,
+      "recent_pest": 0.0244,
+      "ever_convicted": 0.0241,
+      "recent_temperature": 0.0234,
+      "cat_Bar & club": 0.0177,
+      "ever_closed": -0.0142,
+      "cat_Bakery": 0.0138,
+      "last_was_followup": 0.0135,
+      "cat_Unknown": -0.0133,
+      "cat_Food processing": 0.0019
+    }
+  },
+  "y_not_pass": {
+    "label": "Conditional Pass or Closed",
+    "models": {
+      "city_average": {
+        "n": 29720,
+        "observed_rate": 0.082,
+        "mean_prediction": 0.0659,
+        "brier": 0.07554,
+        "log_loss": 0.2856,
+        "roc_auc": 0.5,
+        "average_precision": 0.082,
+        "ece": 0.0196
+      },
+      "last_inspection": {
+        "n": 29720,
+        "observed_rate": 0.082,
+        "mean_prediction": 0.0682,
+        "brier": 0.07373,
+        "log_loss": 0.27619,
+        "roc_auc": 0.5909,
+        "average_precision": 0.1142,
+        "ece": 0.0148
+      },
+      "history_rate": {
+        "n": 29720,
+        "observed_rate": 0.082,
+        "mean_prediction": 0.0746,
+        "brier": 0.07345,
+        "log_loss": 0.27726,
+        "roc_auc": 0.6624,
+        "average_precision": 0.1702,
+        "ece": 0.0304
+      },
+      "logistic": {
+        "n": 29720,
+        "observed_rate": 0.082,
+        "mean_prediction": 0.0693,
+        "brier": 0.07136,
+        "log_loss": 0.26032,
+        "roc_auc": 0.7268,
+        "average_precision": 0.1915,
+        "ece": 0.0134
+      },
+      "gbm": {
+        "n": 29720,
+        "observed_rate": 0.082,
+        "mean_prediction": 0.0619,
+        "brier": 0.07298,
+        "log_loss": 0.2687,
+        "roc_auc": 0.7186,
+        "average_precision": 0.1692,
+        "ece": 0.0249
+      }
+    },
+    "calibration": [
+      {
+        "bin": 0,
+        "n": 2972,
+        "mean_predicted": 0.0119,
+        "observed": 0.0182
+      },
+      {
+        "bin": 1,
+        "n": 2972,
+        "mean_predicted": 0.0203,
+        "observed": 0.0219
+      },
+      {
+        "bin": 2,
+        "n": 2972,
+        "mean_predicted": 0.0259,
+        "observed": 0.035
+      },
+      {
+        "bin": 3,
+        "n": 2972,
+        "mean_predicted": 0.0345,
+        "observed": 0.0394
+      },
+      {
+        "bin": 4,
+        "n": 2972,
+        "mean_predicted": 0.0416,
+        "observed": 0.0498
+      },
+      {
+        "bin": 5,
+        "n": 2972,
+        "mean_predicted": 0.0508,
+        "observed": 0.0653
+      },
+      {
+        "bin": 6,
+        "n": 2972,
+        "mean_predicted": 0.0677,
+        "observed": 0.0979
+      },
+      {
+        "bin": 7,
+        "n": 2972,
+        "mean_predicted": 0.0902,
+        "observed": 0.1208
+      },
+      {
+        "bin": 8,
+        "n": 2972,
+        "mean_predicted": 0.1245,
+        "observed": 0.1497
+      },
+      {
+        "bin": 9,
+        "n": 2972,
+        "mean_predicted": 0.2256,
+        "observed": 0.2221
+      }
+    ],
+    "chosen_model": "logistic",
+    "base_rate_recent": 0.0766,
+    "logistic_coefficients": {
+      "last_n_infractions": 0.2274,
+      "ewm_any": 0.1922,
+      "cat_Institutional": -0.1588,
+      "recent_significant": 0.146,
+      "rate_serious": 0.1357,
+      "rate_not_pass": 0.1356,
+      "has_archive_history": -0.1126,
+      "log_chain_size": -0.1107,
+      "cat_Restaurant & take-out": 0.108,
+      "rate_any": 0.0953,
+      "min_inspections": 0.0777,
+      "recent_pest": 0.0735,
+      "ever_convicted": 0.0735,
+      "history_years": -0.0702,
+      "last_serious": -0.0664,
+      "ewm_serious": -0.0606,
+      "recent_food_contact": -0.054,
+      "cat_Catering & banquet": -0.0522,
+      "cat_Grocery & retail": 0.0446,
+      "min_inspections_unknown": -0.0425,
+      "cat_Bakery": 0.0384,
+      "log_n_inspections": -0.0357,
+      "last_not_pass": -0.0256,
+      "cat_Food processing": 0.0254,
+      "recent_crucial": 0.0245,
+      "last_crucial": 0.0216,
+      "cat_Bar & club": -0.0177,
+      "recent_hygiene": -0.0158,
+      "recent_temperature": -0.0087,
+      "cat_Unknown": -0.0083,
+      "last_was_followup": 0.0069,
+      "ever_closed": -0.0044,
+      "recent_protection": 0.0031,
+      "routine_per_year": -0.0014,
+      "ewm_not_pass": 0.0011
+    }
+  },
+  "city_rates_prior": {
+    "any": 0.4680251323320566,
+    "serious": 0.20921375392692687,
+    "not_pass": 0.05839824417954125
+  },
+  "base_rates_recent": {
+    "y_any": 0.4959,
+    "y_serious": 0.2169,
+    "y_not_pass": 0.0766
+  },
+  "risk_band_counts": {
+    "Low": 9316,
+    "Average": 5216,
+    "Elevated": 3469,
+    "High": 797
+  }
+}

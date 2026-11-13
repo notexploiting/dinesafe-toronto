@@ -1,0 +1,11 @@
+- Period analysed: Nov 2023 to Nov 2026: 81,975 inspections of 18,798 establishments, 76,601 infractions.
+- Concentration of risk: the top 10% of establishments account for 45.3% of all recorded infractions; the top 20% account for 66.9%.
+- 46.9% of routine inspections found at least one infraction; 20.7% found a significant or crucial one; 6.4% ended in a Conditional Pass or closure.
+- 98.5% of follow-up re-inspections (median 4 days after a failed inspection) ended in a Pass.
+- 3,853 establishments (20.5%) had significant or crucial infractions at two or more routine inspections.
+- Among establishments still operating today, monthly inspection volume changed -68.8% during COVID (Mar 2020 to Feb 2022) vs. 2018-2019; the share of inspections with a significant/crucial infraction went from 21.4% to 15.9%.
+- Highest serious-infraction rate by category: Restaurant & take-out (23.9%); lowest: Institutional (8.9%).
+- Median time between routine inspections: 161 days (90th percentile: 392 days).
+- Most common infraction categories: Cleaning & maintenance (53%), Pest control (10%), Hand washing & staff hygiene (9%).
+- 8.2% of inspections cited a pest-control infraction.
+- 257 infractions led to fines (median $150, total $161,838).
