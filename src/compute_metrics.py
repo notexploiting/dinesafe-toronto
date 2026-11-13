@@ -1,116 +1,127 @@
-import pandas as pd
-import numpy as np
+"""
+compute_metrics.py
+
+Headline metrics for reporting (resume bullets, slides, the Excel workbook), computed from
+the tables written by `python -m dinesafe build`:
+
+    data/processed/inspections.csv     one row per inspection
+    data/processed/infractions.csv     one row per infraction
+    data/processed/establishments.csv  one row per establishment
+
+Usage:
+    $ python src/compute_metrics.py
+
+Output:
+    reports/metrics.txt
+
+"Recent" metrics use the City's current feed (about the last 3 years). The COVID comparison
+uses the 2001-2023 archive (for establishments still operating today) and is based on
+severities, since the archive does not record Conditional Pass / Closed results reliably.
+"""
+
 from pathlib import Path
 
-# Set up paths
+import numpy as np
+import pandas as pd
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 REPORTS_DIR.mkdir(exist_ok=True)
 
-# Find latest processed file
-csv_files = list(PROCESSED_DIR.glob("dinesafe_*.csv"))
-if not csv_files:
-    raise FileNotFoundError(f"No processed DineSafe CSV files found in {PROCESSED_DIR.resolve()}")
-latest_file = max(csv_files, key=lambda f: f.stat().st_mtime)
-print(f"Loading {latest_file.name}")
-df = pd.read_csv(latest_file)
+KEY_DTYPES = {"est_key": str, "new_id": str, "legacy_id": str, "postal_code": str}
 
-# Ensure types
-if "Inspection Date" in df:
-    df["Inspection Date"] = pd.to_datetime(df["Inspection Date"], errors="coerce")
-for col in ["has_infraction", "is_serious", "was_fined"]:
-    if col in df:
-        df[col] = df[col].fillna(0).astype(int)
 
+def load(name: str, dates: list[str]) -> pd.DataFrame:
+    path = PROCESSED_DIR / f"{name}.csv"
+    if not path.exists():
+        raise FileNotFoundError(f"{path} not found - run `python -m dinesafe run` first")
+    return pd.read_csv(path, dtype=KEY_DTYPES, parse_dates=dates, low_memory=False)
+
+
+ins = load("inspections", ["inspection_date"])
+inf = load("infractions", ["inspection_date"])
+est = load("establishments", ["last_inspection_date", "first_inspection"])
+
+recent = ins[ins["source"] == "current"]
+recent_inf = inf[inf["source"] == "current"]
 bullets = []
+period = f"{recent['inspection_date'].min():%b %Y} to {recent['inspection_date'].max():%b %Y}"
+bullets.append(f"Period analysed: {period}: {len(recent):,} inspections of {recent['est_key'].nunique():,} "
+               f"establishments, {len(recent_inf):,} infractions.")
 
-# 1. Pareto: Top X% account for Y% of infractions
-est = (df.groupby("Establishment ID")
-         .agg(name=("Establishment Name","first"),
-              infractions=("has_infraction","sum"),
-              serious=("is_serious","sum"),
-              inspections=("Inspection ID","count"))
-         .reset_index())
-est = est.sort_values("infractions", ascending=False).reset_index(drop=True)
-est["cum_infractions"] = est["infractions"].cumsum()
-total_inf = est["infractions"].sum()
-est["cum_share"] = est["cum_infractions"] / total_inf if total_inf else 0
-n = len(est)
-top10_cut = int(np.ceil(0.10 * n))
-top20_cut = int(np.ceil(0.20 * n))
-top10_share = est.loc[:top10_cut-1, "infractions"].sum() / total_inf if total_inf else 0
-top20_share = est.loc[:top20_cut-1, "infractions"].sum() / total_inf if total_inf else 0
-bullets.append(f"Identified concentration of risk: top 10% of establishments account for {top10_share:.1%} of all recorded infractions; top 20% account for {top20_share:.1%}.")
+# 1. Concentration of risk (Pareto)
+per_est = recent_inf.groupby("est_key").size().reindex(recent["est_key"].unique(), fill_value=0)
+per_est = per_est.sort_values(ascending=False)
+total = per_est.sum()
+n = len(per_est)
+top10 = per_est.iloc[: int(np.ceil(0.10 * n))].sum() / total if total else 0
+top20 = per_est.iloc[: int(np.ceil(0.20 * n))].sum() / total if total else 0
+bullets.append(f"Concentration of risk: the top 10% of establishments account for {top10:.1%} of all recorded "
+               f"infractions; the top 20% account for {top20:.1%}.")
 
-# 2. Repeat offenders & high-severity contribution
-repeat_mask = est["inspections"] > 1
-repeat_share = est.loc[repeat_mask, "infractions"].sum() / total_inf if total_inf else 0
-repeat_pct = repeat_mask.mean()
-serious_share = df["is_serious"].sum() / len(df) if len(df) else 0
-bullets.append(f"Repeat-inspection venues ({repeat_pct:.1%} of establishments) contribute {repeat_share:.1%} of total infractions.")
-bullets.append(f"Serious infractions represent {serious_share:.1%} of inspections citywide.")
+# 2. Inspection outcomes
+routine = recent[~recent["is_followup"]]
+bullets.append(f"{routine['has_infraction'].mean():.1%} of routine inspections found at least one infraction; "
+               f"{routine['has_serious'].mean():.1%} found a significant or crucial one; "
+               f"{routine['not_pass'].mean():.1%} ended in a Conditional Pass or closure.")
+fu = recent[recent["is_followup"]]
+if len(fu):
+    bullets.append(f"{(fu['status'] == 'Pass').mean():.1%} of follow-up re-inspections (median "
+                   f"{fu['days_since_previous'].median():.0f} days after a failed inspection) ended in a Pass.")
 
-# 3. COVID impact (monthly volume & serious rate)
-if "Inspection Date" in df:
-    monthly = (df.dropna(subset=["Inspection Date"])
-                 .assign(Period=lambda x: x["Inspection Date"].values.astype("datetime64[M]"))
-                 .groupby("Period")
-                 .agg(inspections=("Inspection ID","count"),
-                      serious=("is_serious","mean"))
-                 .reset_index())
-    pre = monthly[(monthly["Period"] >= "2018-01") & (monthly["Period"] < "2020-03")]
-    cov = monthly[(monthly["Period"] >= "2020-03") & (monthly["Period"] < "2022-03")]
-    post = monthly[monthly["Period"] >= "2022-03"]
-    def safe_mean(s): 
-        return float(s.mean()) if len(s) else np.nan
-    pre_i, cov_i, post_i = map(safe_mean, [pre["inspections"], cov["inspections"], post["inspections"]])
-    pre_s, cov_s, post_s = map(safe_mean, [pre["serious"], cov["serious"], post["serious"]])
-    if not np.isnan(pre_i) and not np.isnan(cov_i):
-        vol_drop = (cov_i - pre_i) / pre_i
-        bullets.append(f"Monthly inspection volume changed {vol_drop:+.1%} during COVID vs. pre-COVID baseline.")
-    if not np.isnan(pre_s) and not np.isnan(cov_s):
-        serious_shift = (cov_s - pre_s)
-        bullets.append(f"Serious-infraction rate shifted {serious_shift:+.1%} during COVID vs. pre-COVID.")
-    if not np.isnan(post_i) and not np.isnan(pre_i):
-        post_recovery = (post_i - pre_i) / pre_i
-        bullets.append(f"Post-COVID inspection volume is {post_recovery:+.1%} vs. pre-COVID baseline.")
+# 3. Repeat offenders
+serious_counts = routine.groupby("est_key")["has_serious"].sum()
+repeat = (serious_counts >= 2).sum()
+bullets.append(f"{repeat:,} establishments ({repeat / max(len(serious_counts), 1):.1%}) had significant or crucial "
+               "infractions at two or more routine inspections.")
 
-# 4. Establishment-type risk
-if "Establishment Type" in df:
-    type_serious = (df.groupby("Establishment Type")
-                      .agg(inspections=("Inspection ID","count"),
-                           serious=("is_serious","sum"))
-                      .assign(serious_rate=lambda x: x["serious"]/x["inspections"])
-                      .sort_values("serious", ascending=False))
-    top_type = type_serious.head(1)
-    if len(top_type):
-        t_name = top_type.index[0]
-        t_share = top_type["serious"].iloc[0] / df["is_serious"].sum() if df["is_serious"].sum() else 0
-        bullets.append(f"One category ('{t_name}') contributes {t_share:.1%} of all serious infractions.")
+# 4. COVID impact (monthly inspection volume and serious-infraction rate). Archive rows are
+# only kept for establishments that are still in the current feed, so this compares the same
+# surviving establishments before and during COVID. A post-COVID volume comparison would be
+# inflated by establishments that opened later, so it is not reported.
+hist = ins[ins["inspection_date"] < "2022-03-01"]
+monthly = (hist.assign(month=hist["inspection_date"].dt.to_period("M"))
+               .groupby("month").agg(inspections=("est_key", "size"), serious=("has_serious", "mean")))
+pre = monthly.loc[pd.Period("2018-01", "M"):pd.Period("2020-02", "M")]
+cov = monthly.loc[pd.Period("2020-03", "M"):pd.Period("2022-02", "M")]
+if len(pre) and len(cov):
+    bullets.append(f"Among establishments still operating today, monthly inspection volume changed "
+                   f"{(cov['inspections'].mean() - pre['inspections'].mean()) / pre['inspections'].mean():+.1%} during COVID "
+                   f"(Mar 2020 to Feb 2022) vs. 2018-2019; the share of inspections with a significant/crucial "
+                   f"infraction went from {pre['serious'].mean():.1%} to {cov['serious'].mean():.1%}.")
 
-# 5. Inspection cadence
-if "Inspection Date" in df:
-    def gaps_days(g):
-        s = g.sort_values().diff().dt.days.dropna()
-        return s
-    gaps = (df.dropna(subset=["Inspection Date"])
-              .groupby("Establishment ID")["Inspection Date"]
-              .apply(gaps_days))
-    median_gap = float(gaps.median()) if len(gaps) else np.nan
-    p90_gap = float(gaps.quantile(0.90)) if len(gaps) else np.nan
-    if not np.isnan(median_gap):
-        bullets.append(f"Median time between inspections across repeat-visit venues is {median_gap:.0f} days (90th percentile: {p90_gap:.0f} days).")
+# 5. Establishment categories
+cat = (routine.merge(est[["est_key", "category"]], on="est_key")
+              .groupby("category").agg(inspections=("est_key", "size"), serious_rate=("has_serious", "mean")))
+cat = cat[cat["inspections"] >= 200].sort_values("serious_rate", ascending=False)
+if len(cat):
+    hi, lo = cat.index[0], cat.index[-1]
+    bullets.append(f"Highest serious-infraction rate by category: {hi} ({cat.loc[hi, 'serious_rate']:.1%}); "
+                   f"lowest: {lo} ({cat.loc[lo, 'serious_rate']:.1%}).")
 
-# 6. Enforcement outcomes
-fined_rate = df["was_fined"].mean() if len(df) else 0
-avg_fine_all = df["Amount Fined"].fillna(0).mean() if "Amount Fined" in df else 0
-avg_fine_if_fined = df.loc[df["was_fined"]==1, "Amount Fined"].mean() if (df["was_fined"]==1).any() else np.nan
-bullets.append(f"Fines issued in {fined_rate:.1%} of inspections; mean fine across all visits ${avg_fine_all:,.0f}" + (f"; mean fine when issued ${avg_fine_if_fined:,.0f}" if not np.isnan(avg_fine_if_fined) else "."))
+# 6. Inspection cadence
+gaps = routine["days_since_previous"].dropna()
+if len(gaps):
+    bullets.append(f"Median time between routine inspections: {gaps.median():.0f} days "
+                   f"(90th percentile: {gaps.quantile(0.9):.0f} days).")
 
-# Clean and save
-bullets_clean = [b.replace("~0.0%", "~0%") for b in dict.fromkeys(bullets)]
-print("\n".join(f"• {b}" for b in bullets_clean))
+# 7. Infraction types
+top_cats = recent_inf["category"].value_counts(normalize=True).head(3)
+bullets.append("Most common infraction categories: " +
+               ", ".join(f"{c} ({s:.0%})" for c, s in top_cats.items()) + ".")
+pest_share = recent.merge(recent_inf[recent_inf["category"] == "Pest control"][["est_key", "inspection_date"]]
+                          .drop_duplicates(), on=["est_key", "inspection_date"]).shape[0] / len(recent)
+bullets.append(f"{pest_share:.1%} of inspections cited a pest-control infraction.")
+
+# 8. Enforcement
+fined = recent_inf[recent_inf["fine"].fillna(0) > 0]
+if len(fined):
+    bullets.append(f"{len(fined):,} infractions led to fines (median ${fined['fine'].median():,.0f}, "
+                   f"total ${fined['fine'].sum():,.0f}).")
+
+text = "\n".join(f"- {b}" for b in bullets)
+print(text)
 out = REPORTS_DIR / "metrics.txt"
-out.write_text("\n".join(f"- {b}" for b in bullets_clean), encoding="utf-8")
+out.write_text(text + "\n", encoding="utf-8")
 print(f"\nSaved: {out}")

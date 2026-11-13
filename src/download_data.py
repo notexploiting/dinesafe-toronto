@@ -1,116 +1,36 @@
-import os
-import requests
-from datetime import datetime
 """
 download_data.py
 
-Fetches the most up-to-date DineSafe dataset from the City of Toronto's Open Data CKAN API.
+Fetches the most up-to-date DineSafe data from the City of Toronto's Open Data CKAN API.
 
-Usage:
-    Run this script from the root of the repository:
-        $ python src/download_data.py
+This script is kept so the original workflow still works:
 
-    The script will:
-    - Retrieve metadata for the "dinesafe" dataset
-    - Identify the latest datastore-active resource
-    - Download the full CSV dump from CKAN
-    - Save the raw file to the 'data/raw/' directory with a timestamped filename
+    $ python src/download_data.py            # same as: python -m dinesafe download
+    $ python src/download_data.py --force    # re-download even if nothing changed
+
+The download logic now lives in the `dinesafe` package (src/dinesafe/ckan.py and
+src/dinesafe/download.py). Compared with the first version of this script it:
+
+- picks the right resource explicitly (the dataset now has several CSV/JSON/XML copies)
+- retries with backoff and uses timeouts instead of hanging on a bad connection
+- streams the ~50 MB file to disk and only renames it into place once it is complete
+- checks that the expected columns are present (the City changed the schema in 2025)
+- checks the row count against the datastore's own total
+- writes a manifest (source, time, SHA-256, rows) and skips the download when the City
+  hasn't refreshed the data since the last run
+- also fetches the 2001-2023 historical archive (once; it rarely changes)
 
 Output:
-    - data/raw/dinesafe_YYYYMMDD_HHMMSS.csv
-
-Notes:
-    - Requires an internet connection
-    - Will create the 'data/raw' directory if it doesn't exist
-    - Use this script before running 01_eda.ipynb to ensure data is available
-
+    data/raw/dinesafe_YYYYMMDD_HHMMSS.csv (+ .manifest.json)
+    data/raw/historical/dinesafe_hist_YYYY.csv
 """
 
+import sys
+from pathlib import Path
 
-# ----------------------------
-# CONSTANTS
-# ----------------------------
-BASE_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
-PACKAGE_ID = "dinesafe"
-DATA_DIR = "data"
-RAW_DIR = "data/raw"
-CSV_FILENAME = "dinesafe_raw.csv"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-# ----------------------------
-# Get metadata for the package
-# ----------------------------
-def fetch_package_metadata(package_id):
-    """
-    Retrieve the dinesafe dataset metadata, including its resources from CKAN.
-    """
-    print(f"Fetching metadata for package with ID '{package_id}'")
-    url = BASE_URL + "/api/3/action/package_show"
-    p = {"id": package_id}
-    response = requests.get(url, params=p)
-    response.raise_for_status()
-    return response.json()["result"]
-
-
-
-# ----------------------------
-# Show all available resources, and then handle them accordingly
-# ----------------------------
-def handle_resources(resources):
-    print("\nAvailable resources:")
-    for idx, resource in enumerate(resources):
-        print(f"\n---- RESOURCE {idx} -----")
-        print("\t" + "Name: " + resource["name"])
-        print("\t" + "ID: " + resource["id"])
-        print("\t" + "Format: " + resource.get("format", "unknown"))
-        print(f"\tDatastore Active: {resource['datastore_active']}")
-
-        if resource["datastore_active"]:
-            print("!! YES This is a CKAN datastore-active resource")
-            print("Download URL: " + BASE_URL + "/datastore/dump/" + resource["id"])
-            handle_datastore_resource(resource)
-            # break # if you only want to download the first one
-        else:
-            print("This is a direct file resource")
-            print("Download URL: " + resource["url"])
-
-# ----------------------------
-# Handle a datastore-active resource
-# ----------------------------
-def handle_datastore_resource(resource):
-    # Attempt to get all records in CSV format
-    resource_dump_url = BASE_URL + "/datastore/dump/" + resource["id"]
-    print("Downloading CSV from CKAN. This may take a few seconds.")
-    resource_dump_response = requests.get(resource_dump_url)
-
-    if resource_dump_response.status_code == 200:
-        print("Successfully downloaded the full CSV dump.")
-        preview = resource_dump_response.text[:500]
-        print("Truncated preview:" + preview)
-
-        os.makedirs(RAW_DIR, exist_ok=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"dinesafe_{timestamp}.csv"
-        save_path = os.path.join(RAW_DIR, filename)
-
-        with open(save_path, "w", encoding="utf-8") as f:
-            f.write(resource_dump_response.text)
-
-        print("\nSuccesfully saved CSV to: " + save_path)
-    else:
-        print(f"CSV dump not available (status code : {resource_dump_response.status_code})")
-
-    # Show the first few records using datastore_search
-    datastore_search_url = BASE_URL + "/api/3/action/datastore_search"
-    p = {"id": resource["id"]}
-    resource_search_response = requests.get(datastore_search_url, params=p).json()
-    resource_search_records = resource_search_response["result"]["records"]
-
-    print(f"Previewing first {len(resource_search_records)} records:")
-    for record in resource_search_records[:3]:
-        print(record)
-
-
+from dinesafe.cli import main  # noqa: E402
 
 if __name__ == "__main__":
-    package_metadata = fetch_package_metadata(PACKAGE_ID)
-    handle_resources(package_metadata["resources"])
+    raise SystemExit(main(["download", *sys.argv[1:]]))
