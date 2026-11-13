@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DineSafe Toronto Map</title>
+  <meta name="description" content="Browse Toronto Public Health food-safety inspections on a map, search establishments and view their inspection history and predicted risk.">
+  <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>DineSafe Toronto</h1>
+    <span id="asof" class="muted"></span>
+    <button id="aboutBtn" type="button" class="link">About the data &amp; predictions</button>
+  </header>
+
+  <main class="layout">
+    <aside class="panel" id="panel">
+      <section id="searchView" aria-label="Search and filters">
+        <label for="q" class="sr-only">Search establishments</label>
+        <input id="q" type="search" placeholder="Search by name, address, postal code or ID" autocomplete="off" spellcheck="false">
+
+        <details id="filters" open>
+          <summary>Filters</summary>
+          <div class="filters">
+            <fieldset>
+              <legend>Latest inspection result</legend>
+              <label><input type="checkbox" name="status" value="0" checked> <span class="dot s0"></span>Pass</label>
+              <label><input type="checkbox" name="status" value="1" checked> <span class="dot s1"></span>Conditional Pass</label>
+              <label><input type="checkbox" name="status" value="2" checked> <span class="dot s2"></span>Closed</label>
+            </fieldset>
+            <label>Category
+              <select id="fCat"><option value="">All categories</option></select>
+            </label>
+            <label>Predicted risk
+              <select id="fRisk">
+                <option value="">Any</option>
+                <option value="0">Low</option>
+                <option value="1">Average</option>
+                <option value="2">Elevated</option>
+                <option value="3">High</option>
+                <option value="23">Elevated or High</option>
+              </select>
+            </label>
+            <label>Last inspected
+              <select id="fRecent">
+                <option value="">Any time</option>
+                <option value="182">Within 6 months</option>
+                <option value="365">Within 12 months</option>
+                <option value="-365">More than 12 months ago</option>
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" id="fCrucial"> Had a crucial infraction (last 3 years)</label>
+            <label class="check"><input type="checkbox" id="fPending"> Re-inspection pending</label>
+            <label class="check"><input type="checkbox" id="fInactive"> Include establishments that are likely closed</label>
+            <label class="check"><input type="checkbox" id="fInView"> List only what is visible on the map</label>
+            <div class="row">
+              <label>Colour map by
+                <select id="colorBy">
+                  <option value="status">Latest result</option>
+                  <option value="risk">Predicted risk</option>
+                </select>
+              </label>
+              <label>Sort list by
+                <select id="sortBy">
+                  <option value="name">Name</option>
+                  <option value="risk">Highest predicted risk</option>
+                  <option value="recent">Most recently inspected</option>
+                </select>
+              </label>
+            </div>
+            <button id="reset" type="button">Reset filters</button>
+          </div>
+        </details>
+
+        <p id="count" class="count" aria-live="polite"></p>
+        <ol id="results" class="results"></ol>
+        <button id="more" type="button" hidden>Show more</button>
+      </section>
+
+      <section id="detailView" hidden aria-live="polite"></section>
+    </aside>
+
+    <div id="map" role="region" aria-label="Map of establishments"></div>
+  </main>
+
+  <dialog id="about">
+    <form method="dialog"><button class="close" aria-label="Close">&times;</button></form>
+    <h2>About this dashboard</h2>
+    <h3>Data</h3>
+    <p>Inspection records come from the City of Toronto's
+      <a href="https://open.toronto.ca/dataset/dinesafe/" target="_blank" rel="noopener">DineSafe open dataset</a>
+      (about the last three years, refreshed daily). Older records (2001 to 2023) come from the same dataset's
+      historical archive and are shown for establishments that can be linked to it. The pipeline merges establishments
+      that the City's late-2025 system migration listed twice, and removes the duplicated inspections.</p>
+    <p><strong>Pass</strong>, <strong>Conditional Pass</strong> and <strong>Closed</strong> are Toronto Public Health's
+      official results. After a Conditional Pass or Closed result, the City re-inspects, usually within a few days.
+      Establishments that were not carried into the City's new system in November 2025 are hidden by default because
+      they have most likely closed.</p>
+    <p>The archive rarely records Conditional Pass or Closed results, so older statuses mostly read "Pass".
+      Infractions and their severities in the archive are reliable.</p>
+    <h3>Predictions</h3>
+    <p>For each establishment, a logistic regression model estimates the chance that its <em>next routine
+      inspection</em> finds (a) any infraction, (b) a significant or crucial infraction and (c) a result that is not a
+      Pass. It uses only the establishment's past inspection record: how often and how recently it had infractions,
+      what kinds, how often it is inspected, the City's risk tier where known, its category and whether it is a
+      chain. On the most recent 12 months of inspections, which the model did not see in training, its ROC AUC was
+      <span id="aucText">around 0.7</span>. That means it ranks establishments much better than chance, but it is far
+      from certain about any single one.</p>
+    <p>Risk bands compare the chance of a significant or crucial infraction with the city-wide rate:
+      Low &lt; 0.75&times;, Average 0.75 to 1.25&times;, Elevated 1.25 to 2&times;, High &ge; 2&times;.</p>
+    <p class="warn"><strong>These are statistical estimates, not official ratings.</strong> A high score does not mean
+      that an establishment is unsafe today. For the official result, check the latest inspection status.</p>
+    <h3>Categories</h3>
+    <p>The current feed no longer says what kind of business an establishment is. The category comes from the
+      historical archive where possible. Otherwise it is predicted from the establishment's name and marked "inferred".</p>
+    <p class="muted">Contains information licensed under the
+      <a href="https://open.toronto.ca/open-data-licence/" target="_blank" rel="noopener">Open Government Licence &ndash; Toronto</a>.
+      Map data &copy; OpenStreetMap contributors.</p>
+  </dialog>
+
+  <noscript><p class="fatal">This dashboard needs JavaScript.</p></noscript>
+  <script src="vendor/leaflet-1.9.4/leaflet.js"></script>
+  <script src="data/dinesafe-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
